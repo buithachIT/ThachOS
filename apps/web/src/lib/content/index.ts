@@ -7,8 +7,8 @@ export { ContentError } from "./load";
 export { renderMdx } from "./mdx";
 
 /**
- * Repo-level `content/` folder. `next dev`/`next build` run with cwd = apps/web.
- * Deploy (task 7) must keep that cwd or ship `content/` alongside the server output.
+ * Repo-level `content/` folder. `next dev`/`next build` (and Vercel functions) run with
+ * cwd = apps/web; next.config.ts ships content/ with the server output via file tracing.
  */
 export const CONTENT_DIR = path.resolve(process.cwd(), "../../content");
 
