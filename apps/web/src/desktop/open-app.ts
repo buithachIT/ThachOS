@@ -1,5 +1,9 @@
 import type { AppId } from "@portfolio/shared";
+import { windowsStore } from "@/stores/windows";
+import { focusWindowElement } from "@/windows/focus";
 
-/** Placeholder until the window manager (task 3) exists. */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function openApp(appId: AppId): void {}
+/** Open (or bring back) an app's window and move keyboard focus into it. */
+export function openApp(appId: AppId): void {
+  const id = windowsStore.getState().open(appId);
+  requestAnimationFrame(() => focusWindowElement(id));
+}

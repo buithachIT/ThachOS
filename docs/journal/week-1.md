@@ -18,3 +18,13 @@
   - Sau khi cài jsdom, `mdx.test.tsx` fail với lỗi khó hiểu (`reading 'config'`). Nguyên nhân: `node_modules` còn sót một virtual store cũ trong `apps/web` và 2 bản Vitest; cài lại sạch là hết. CI không bị vì luôn cài sạch.
   - Một lượt chụp màn hình vô tình lấy từ dev server của chủ repo ở cổng 3000 (thấy biểu tượng "N" của Next dev); chụp lại từ bản production ở cổng 3100.
 - **Review:** ĐẠT ở vòng 1. Áp dụng 4 gợi ý: `appIdSchema`, `data-app-id` trên icon cho task 3, Esc/click chỗ trống để bỏ chọn, bỏ `suppressHydrationWarning` thừa. Để task 6: vùng chạm 44px cho nút theme.
+
+## Task 3: Window manager
+
+- **Đã làm:** store Zustand (vanilla) + hàm hình học thuần; cửa sổ kéo/đổi kích thước bằng Pointer Events tự viết (ghi thẳng vào style trong lúc kéo, thả mới commit store); thu nhỏ/phóng to/đóng, taskbar, error boundary theo cửa sổ, `AppBoundary`; ghi nhớ bố cục (Zod validate); Playwright (4 test e2e) + job e2e trong CI. Kéo 4 cửa sổ: p90 khung hình 16.7ms.
+- **Vướng:**
+  - Selector `useShallow` trả về mảng tuple mới mỗi lần → "Maximum update depth exceeded". Test jsdom bắt được; sửa bằng cách chỉ chọn mảng id (chuỗi).
+  - Class `flex` ghi đè thuộc tính `hidden`, cửa sổ thu nhỏ vẫn hiện.
+  - `turbo test:e2e` chạy luôn e2e có sẵn của Nest, sẽ fail trên CI vì không có `.env`; giới hạn script gốc vào web.
+  - Cửa sổ đầu tiên đè lên cột icon; chỉ thấy khi chụp màn hình.
+- **Review:** vòng 1 CHƯA ĐẠT với 3 lỗi thật mà mình bỏ sót: cascade đè cửa sổ sau khi đóng bớt, `localStorage` hỏng làm không mở được cửa sổ, mở lại app đang mở không chuyển focus. Đã sửa kèm test; vòng 2 ĐẠT.

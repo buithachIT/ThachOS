@@ -1,5 +1,6 @@
 import { Clock } from "./Clock";
 import { LogoMark } from "./icons";
+import { Taskbar } from "@/windows/Taskbar";
 import { ThemeToggle } from "./ThemeToggle";
 
 export function SystemBar() {
@@ -9,8 +10,9 @@ export function SystemBar() {
         <LogoMark className="size-5 text-accent" />
         <span>ThạchOS</span>
       </div>
-      {/* Open-window list: filled by the window manager (task 3). */}
-      <div className="min-w-0 flex-1" />
+      <div className="flex min-w-0 flex-1 justify-center">
+        <Taskbar />
+      </div>
       <div className="flex items-center gap-2">
         <Clock />
         <ThemeToggle />

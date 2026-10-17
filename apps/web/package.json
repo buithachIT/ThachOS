@@ -9,7 +9,8 @@
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
     "content:check": "tsx scripts/validate-content.mts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@mdx-js/mdx": "^3.1.1",
@@ -18,9 +19,12 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "server-only": "^0.0.1",
-    "yaml": "^2.9.1"
+    "yaml": "^2.9.1",
+    "zod": "^4.6.7",
+    "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.1",
     "@portfolio/tsconfig": "workspace:*",
     "@tailwindcss/turbopack": "^4",
     "@testing-library/react": "^16.3.3",
@@ -35,7 +39,6 @@
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
     "typescript": "catalog:",
-    "vitest": "^5.0.5",
-    "zod": "^4.6.7"
+    "vitest": "^5.0.5"
   }
 }

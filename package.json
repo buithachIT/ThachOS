@@ -10,7 +10,8 @@
     "test": "turbo test",
     "prepare": "husky",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "test:e2e": "turbo test:e2e --filter=@portfolio/web"
   },
   "keywords": [],
   "author": "",
