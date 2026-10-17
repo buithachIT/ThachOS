@@ -1,0 +1,5 @@
+{
+  "extends": "@portfolio/tsconfig/library.json",
+  "compilerOptions": { "types": ["node"] },
+  "include": ["src", "drizzle.config.ts"]
+}
