@@ -1,0 +1,27 @@
+---
+title: Aurore – E-commerce Headless
+summary: Cửa hàng headless Next.js 15 trên nền WooCommerce, thanh toán Stripe Checkout, deploy Docker trên VPS.
+stack: [Next.js, React, TypeScript, GraphQL, Tailwind CSS, WooCommerce, Stripe, Vitest]
+role: Fullstack
+year: 2025
+links:
+  demo: https://aurore.nasbui.site
+  repo: https://github.com/buithachIT/aurore_ecomerce
+# cover: /images/projects/aurore.png  # [PLACEHOLDER]
+featured: false
+order: 3
+---
+
+## Vấn đề
+
+WooCommerce quản lý sản phẩm và đơn hàng tốt, nhưng giao diện mặc định chậm và khó tùy biến.
+
+## Giải pháp
+
+- Storefront headless bằng Next.js App Router, lấy dữ liệu qua GraphQL (Apollo) từ backend WooCommerce.
+- Tích hợp Stripe Checkout (Sessions + Webhooks) để xử lý đơn hàng tự động (test mode).
+- Bộ test với Vitest, Testing Library và MSW.
+
+## Kết quả
+
+Toàn bộ stack được đóng gói Docker và deploy có SSL trên Linux VPS.

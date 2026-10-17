@@ -1,0 +1,28 @@
+---
+title: E-commerce Backend API
+summary: Backend thương mại điện tử nhiều lớp với JWT, checkout an toàn bằng transaction, CI/CD và deploy Docker trên VPS.
+stack: [Node.js, Express, PostgreSQL, JWT, Jest, Docker, GitHub Actions, Nginx]
+role: Backend
+year: 2026
+links:
+  demo: https://api-ecommerce.nasbui.site/api-docs/
+  repo: https://github.com/buithachIT/E-commerceBackend-API_Node.js-Express-PostgreSQL
+# cover: /images/projects/ecommerce-backend-api.png  # [PLACEHOLDER]
+featured: true
+order: 2
+---
+
+## Vấn đề
+
+Backend thương mại điện tử phải xử lý đúng khi nhiều người cùng đặt một sản phẩm sắp hết hàng, và phải giữ an toàn cho tài khoản người dùng.
+
+## Giải pháp
+
+- REST API phân lớp (Route → Controller → Service → Repository), có tài liệu Swagger.
+- Xác thực JWT với refresh token rotation và phát hiện token bị dùng lại, bcrypt, xác minh email và đặt lại mật khẩu.
+- Các domain chính: sản phẩm nhiều loại, giỏ hàng, voucher, checkout với giá tính phía server.
+- Checkout an toàn bằng transaction: khóa dòng PostgreSQL (`SELECT ... FOR UPDATE`) khi trừ tồn kho.
+
+## Kết quả
+
+Bộ test Jest chạy trong CI/CD bằng GitHub Actions. Ứng dụng được đóng gói Docker Compose và deploy trên Linux VPS sau Nginx Proxy Manager.
