@@ -10,7 +10,8 @@ import {
 } from "react";
 import { APP_ICONS } from "@/desktop/icons";
 import { clampPosition, MIN_SIZE, type Rect } from "@/stores/window-geometry";
-import { useWindows, windowsStore } from "@/stores/windows";
+import { useWindows, useWindowsApi, WindowIdContext } from "@/stores/WindowsProvider";
+import type { WindowsStore } from "@/stores/windows";
 import { AppBoundary } from "./AppBoundary";
 import { focusAppIcon, focusWindowElement, windowDomId } from "./focus";
 import type { AppContents } from "./WindowLayer";
@@ -55,10 +56,10 @@ function applyRect(el: HTMLElement, r: Rect) {
  * Drag and resize write straight to this element's style and only commit to the store on
  * pointerup, so nothing else on the desktop re-renders while a window moves.
  */
-function useGesture(id: string, ref: React.RefObject<HTMLElement | null>) {
+function useGesture(store: WindowsStore, id: string, ref: React.RefObject<HTMLElement | null>) {
   return (event: ReactPointerEvent, mode: "move" | Edge) => {
     const el = ref.current;
-    const win = windowsStore.getState().windows.find((w) => w.id === id);
+    const win = store.getState().windows.find((w) => w.id === id);
     if (!el || !win || win.maximized || event.button !== 0) return;
     event.preventDefault();
 
@@ -72,7 +73,7 @@ function useGesture(id: string, ref: React.RefObject<HTMLElement | null>) {
     const onMove = (e: PointerEvent) => {
       const dx = e.clientX - origin.x;
       const dy = e.clientY - origin.y;
-      const { viewport } = windowsStore.getState();
+      const { viewport } = store.getState();
       current =
         mode === "move"
           ? { ...start, ...clampPosition({ ...start, x: start.x + dx, y: start.y + dy }, viewport) }
@@ -88,7 +89,7 @@ function useGesture(id: string, ref: React.RefObject<HTMLElement | null>) {
       target.removeEventListener("pointercancel", onUp);
       target.removeEventListener("lostpointercapture", onUp);
       // A click on the title bar without moving changes nothing; don't write.
-      if (current !== start) windowsStore.getState().setRect(id, current);
+      if (current !== start) store.getState().setRect(id, current);
     };
 
     target.addEventListener("pointermove", onMove);
@@ -99,11 +100,12 @@ function useGesture(id: string, ref: React.RefObject<HTMLElement | null>) {
 }
 
 export function Window({ id, apps }: { id: string; apps: AppContents }) {
+  const store = useWindowsApi();
   const win = useWindows((s) => s.windows.find((w) => w.id === id));
   const viewport = useWindows((s) => s.viewport);
   const isTop = useWindows((s) => s.windows.every((w) => w.id === id || w.z < (win?.z ?? 0)));
   const ref = useRef<HTMLElement>(null);
-  const startGesture = useGesture(id, ref);
+  const startGesture = useGesture(store, id, ref);
 
   // Opening a window moves keyboard focus into it.
   useEffect(() => {
@@ -115,7 +117,7 @@ export function Window({ id, apps }: { id: string; apps: AppContents }) {
   const Icon = APP_ICONS[app.icon];
   const titleId = `${windowDomId(id)}-title`;
   const rect = win.maximized ? { x: 0, y: 0, w: viewport.w, h: viewport.h } : win;
-  const { close, focus, minimize, toggleMaximize } = windowsStore.getState();
+  const { close, focus, minimize, toggleMaximize } = store.getState();
 
   const closeWindow = () => {
     close(id);
@@ -125,7 +127,7 @@ export function Window({ id, apps }: { id: string; apps: AppContents }) {
   // The minimize button disappears with the window; hand focus to the next window or the icon.
   const minimizeWindow = () => {
     minimize(id);
-    const next = windowsStore
+    const next = store
       .getState()
       .windows.filter((w) => !w.minimized)
       .sort((a, b) => b.z - a.z)[0];
@@ -197,7 +199,9 @@ export function Window({ id, apps }: { id: string; apps: AppContents }) {
 
       <div className="min-h-0 flex-1 overflow-auto">
         <WindowErrorBoundary appTitle={app.title}>
-          <AppBoundary name={win.appId}>{apps[win.appId] ?? null}</AppBoundary>
+          <WindowIdContext.Provider value={id}>
+            <AppBoundary name={win.appId}>{apps[win.appId] ?? null}</AppBoundary>
+          </WindowIdContext.Provider>
         </WindowErrorBoundary>
       </div>
 

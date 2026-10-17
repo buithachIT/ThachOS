@@ -3,12 +3,14 @@
 import { type AppId, APPS } from "@portfolio/shared";
 import { type KeyboardEvent, useState } from "react";
 import { APP_ICONS } from "./icons";
-import { openApp } from "./open-app";
+import { useOpenApp } from "./open-app";
 
 type Props = { onOpen?: (appId: AppId) => void };
 
 /** Desktop icons from the app registry. Click selects; double-click or Enter opens. */
-export function DesktopIcons({ onOpen = openApp }: Props) {
+export function DesktopIcons({ onOpen: onOpenProp }: Props) {
+  const openApp = useOpenApp();
+  const onOpen = onOpenProp ?? openApp;
   const [selected, setSelected] = useState<AppId | null>(null);
 
   const onKeyDown = (event: KeyboardEvent, appId: AppId) => {

@@ -3,7 +3,7 @@
 import type { Profile } from "@portfolio/shared";
 import Image from "next/image";
 import type { ReactNode } from "react";
-import { openApp } from "@/desktop/open-app";
+import { useOpenApp } from "@/desktop/open-app";
 import type { SkillGroup } from "@/lib/skills";
 
 type Props = { profile: Profile; body: ReactNode; skills: SkillGroup[] };
@@ -17,6 +17,7 @@ const initials = (name: string) =>
     .join("");
 
 export function AboutApp({ profile, body, skills }: Props) {
+  const openApp = useOpenApp();
   return (
     <article className="space-y-6 p-6">
       <header className="flex items-start gap-4">

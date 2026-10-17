@@ -2,12 +2,13 @@
 
 import { getApp } from "@portfolio/shared";
 import { APP_ICONS } from "@/desktop/icons";
-import { useWindows, windowsStore } from "@/stores/windows";
+import { useWindows, useWindowsApi } from "@/stores/WindowsProvider";
 import { focusWindowElement } from "./focus";
 
 /** Open windows in the system bar. Click focuses a window, restoring it if minimized. */
 export function Taskbar() {
   // Only changes on open/close/focus and at the end of a drag, never during one.
+  const store = useWindowsApi();
   const windows = useWindows((s) => s.windows);
   if (windows.length === 0) return null;
   const top = Math.max(...windows.map((w) => w.z));
@@ -25,7 +26,7 @@ export function Taskbar() {
                 type="button"
                 aria-current={isActive ? "true" : undefined}
                 onClick={() => {
-                  windowsStore.getState().focus(win.id);
+                  store.getState().focus(win.id);
                   requestAnimationFrame(() => focusWindowElement(win.id));
                 }}
                 className={`flex h-7 items-center gap-1.5 rounded-os border px-2 font-mono text-xs ${

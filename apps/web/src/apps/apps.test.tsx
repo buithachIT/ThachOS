@@ -2,8 +2,9 @@
 import type { Experience, Project } from "@portfolio/shared";
 import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { windowsStore } from "@/stores/windows";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { useWindowsApi, WindowsProvider } from "@/stores/WindowsProvider";
+import type { WindowsStore } from "@/stores/windows";
 import { AboutApp } from "./about/AboutApp";
 import { ContactApp } from "./contact/ContactApp";
 import { ExperienceApp } from "./experience/ExperienceApp";
@@ -48,21 +49,21 @@ const projects = [
 afterEach(cleanup);
 
 /** Project card by its accessible name (the cover placeholder is aria-hidden). */
-const card = (title: string) => screen.queryByRole("button", { name: title });
+const card = (title: string) => screen.queryByRole("link", { name: title });
 
 describe("AboutApp", () => {
-  beforeEach(() => windowsStore.getState().closeAll());
-
   it("shows the profile, body and skills grouped by count", () => {
     render(
-      <AboutApp
-        profile={profile}
-        body={<p>Giới thiệu dài</p>}
-        skills={[
-          { count: 3, skills: ["Next.js"] },
-          { count: 1, skills: ["Docker"] },
-        ]}
-      />,
+      <WindowsProvider>
+        <AboutApp
+          profile={profile}
+          body={<p>Giới thiệu dài</p>}
+          skills={[
+            { count: 3, skills: ["Next.js"] },
+            { count: 1, skills: ["Docker"] },
+          ]}
+        />
+      </WindowsProvider>,
     );
     expect(screen.getByRole("heading", { name: "Bùi Công Thạch" })).toBeTruthy();
     expect(screen.getByText("Giới thiệu dài")).toBeTruthy();
@@ -72,16 +73,26 @@ describe("AboutApp", () => {
 
   it("opens the Projects window from its button", async () => {
     const user = userEvent.setup();
-    render(<AboutApp profile={profile} body={null} skills={[]} />);
+    let store: WindowsStore | undefined;
+    const Probe = () => {
+      store = useWindowsApi();
+      return null;
+    };
+    render(
+      <WindowsProvider>
+        <Probe />
+        <AboutApp profile={profile} body={null} skills={[]} />
+      </WindowsProvider>,
+    );
     await user.click(screen.getByRole("button", { name: /Xem Projects/ }));
-    expect(windowsStore.getState().windows.map((w) => w.appId)).toEqual(["projects"]);
+    expect(store!.getState().windows.map((w) => w.appId)).toEqual(["projects"]);
   });
 });
 
 describe("ProjectsApp", () => {
   it("lists featured projects first, then by order", () => {
     render(<ProjectsApp projects={projects} />);
-    const cards = screen.getAllByRole("listitem").filter((li) => li.querySelector("button"));
+    const cards = screen.getAllByRole("listitem").filter((li) => li.querySelector("a"));
     expect(cards.map((c) => within(c).getAllByText(/^[A-Z]+$/)[0]?.textContent)).toEqual([
       "BETA",
       "ALPHA",
@@ -188,7 +199,7 @@ describe("ProjectsApp focus", () => {
   it("collapses long stacks into +N but keeps the full list for screen readers", () => {
     const many = project("delta", { stack: ["A", "B", "C", "D", "E", "F", "G"] });
     render(<ProjectsApp projects={[many]} />);
-    const button = screen.getByRole("button", { description: /Công nghệ: A, B, C, D, E, F, G/ });
+    const button = screen.getByRole("link", { description: /Công nghệ: A, B, C, D, E, F, G/ });
     expect(button.textContent).toContain("+2");
     // Only phrasing content inside a button.
     expect(button.querySelector("ul, li, div, p, h1, h2, h3")).toBeNull();
