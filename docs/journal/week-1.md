@@ -47,3 +47,12 @@
   - Trang stream nên `notFound()` chỉ trả 200 + `noindex`; dùng proxy cho các đường dẫn kiểm tra được mà không cần content.
   - **Lỗi đáng nhớ nhất:** server HTML không hề có cửa sổ, vì Zustand render phía server bằng `getInitialState()` (state lúc tạo store, trước khi mở cửa sổ ban đầu). Test e2e "nội dung có trong HTML" vẫn pass vì chữ nằm trong payload RSC. Chỉ phát hiện khi chụp màn hình bản tắt JS. Sửa store và đổi test sang trình duyệt tắt JS.
 - **Review:** vòng 1 CHƯA ĐẠT: `NEXT_PUBLIC_SITE_URL` chưa có trong `.env.example` và chưa validate bằng Zod (quên đặt thì SEO trỏ về localhost mà không ai biết). Đã sửa kèm test; vòng 2 ĐẠT.
+
+## Task 6: Giao diện điện thoại
+
+- **Đã làm:** dưới 768px, cùng DOM và cùng store chỉ đổi lớp hiển thị bằng CSS (`max-md:`): cửa sổ toàn màn hình, chỉ app trên cùng hiện, nút quay lại 44px; desktop thành lưới icon; chạm một lần là mở. Back sau deep link về màn hình chính thay vì rời trang (chèn `/` vào lịch sử). Vùng chạm ≥ 44px. 9 test Playwright ở 390×844. Lighthouse mobile: `/` 96/100, `/about` 93/100 (Performance/Accessibility).
+- **Vướng:**
+  - Test "switches layout" bắt được lỗi thật: trên điện thoại `setViewport` thu kích thước lưu của mọi cửa sổ về 390px, nên mở rộng lại thì cửa sổ vẫn hẹp.
+  - Nhiều lần chạy e2e "treo": `pnpm exec` của pnpm 11 kiểm tra dependency qua mạng trước khi chạy, mạng chậm nên web server của Playwright không kịp lên. Gọi thẳng `node_modules/.bin/next`. Thêm nữa, macOS không có lệnh `timeout` nên vài lệnh kiểm tra lỗi ngay mà không in gì; suýt đọc nhầm thành "không có lỗi".
+- **Review:** ĐẠT ở vòng 1. Áp dụng thêm: `isTop` bỏ qua cửa sổ đã thu nhỏ (tránh màn hình trống khi thu hẹp trình duyệt), chặn double-tap mở app hai lần.
+  - Lệnh sửa `playwright.config.ts` không áp dụng vì Prettier đã đổi định dạng file, nên test mobile chạy nhầm trong project desktop.

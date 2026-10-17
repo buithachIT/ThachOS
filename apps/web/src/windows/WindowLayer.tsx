@@ -3,6 +3,7 @@
 import type { AppId } from "@portfolio/shared";
 import { type ReactNode, useEffect, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
+import { isPhone } from "@/lib/viewport";
 import { useWindows, useWindowsApi } from "@/stores/WindowsProvider";
 import { Window } from "./Window";
 
@@ -18,7 +19,12 @@ export function WindowLayer({ apps }: { apps: AppContents }) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const sync = () => store.getState().setViewport({ w: el.clientWidth, h: el.clientHeight });
+    const sync = () => {
+      // Phones show windows full screen and ignore their geometry; clamping to a 390px
+      // viewport would shrink every window for when the screen gets wide again.
+      if (isPhone()) return;
+      store.getState().setViewport({ w: el.clientWidth, h: el.clientHeight });
+    };
     sync();
     const observer = new ResizeObserver(sync);
     observer.observe(el);
@@ -26,7 +32,7 @@ export function WindowLayer({ apps }: { apps: AppContents }) {
   }, [store]);
 
   return (
-    <div ref={ref} className="pointer-events-none absolute inset-0 isolate">
+    <div ref={ref} className="pointer-events-none absolute inset-0 isolate max-md:z-20">
       {ids.map((id) => (
         <Window key={id} id={id} apps={apps} />
       ))}

@@ -87,7 +87,7 @@ function QuickOpen({ label, onClick }: { label: string; onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="rounded-os border border-ink bg-surface px-3 py-1.5 font-mono text-xs shadow-os transition-[translate,box-shadow] duration-100 hover:-translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:translate-y-px active:shadow-none"
+      className="rounded-os border border-ink bg-surface px-3 py-1.5 font-mono text-xs max-md:min-h-11 shadow-os transition-[translate,box-shadow] duration-100 hover:-translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:translate-y-px active:shadow-none"
     >
       {label} →
     </button>

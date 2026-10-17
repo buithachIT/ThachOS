@@ -16,11 +16,23 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
+      testIgnore: /mobile\.spec/,
       use: { ...devices["Desktop Chrome"], viewport: { width: 1280, height: 800 } },
+    },
+    {
+      name: "mobile",
+      testMatch: /mobile\.spec/,
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 390, height: 844 },
+        isMobile: true,
+        hasTouch: true,
+      },
     },
   ],
   webServer: {
-    command: `pnpm exec next start -p ${PORT}`,
+    // Call the binary directly: `pnpm exec` may first verify deps over the network.
+    command: `./node_modules/.bin/next start -p ${PORT}`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: false,
     timeout: 60_000,

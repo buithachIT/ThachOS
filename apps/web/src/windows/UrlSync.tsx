@@ -5,6 +5,12 @@ import { parsePath, pathForWindows } from "@/lib/routes";
 import type { WindowState } from "@/stores/windows";
 import { useWindowsApi } from "@/stores/WindowsProvider";
 
+/** How many history entries ThạchOS has pushed on top of its base `/` entry. */
+export const historyDepth = (): number => {
+  const state = window.history.state as { thachos?: number } | null;
+  return state?.thachos ?? 0;
+};
+
 /** Which windows exist and where they are; focus changes alone don't change it. */
 const historyKey = (windows: WindowState[]) =>
   windows
@@ -28,6 +34,14 @@ export function UrlSync() {
     let applying = false;
     let lastKey = historyKey(store.getState().windows);
 
+    // Deep link (e.g. /projects/x opened from a search result): put `/` underneath it, so Back
+    // goes to the desktop instead of leaving the site, which phones rely on.
+    const entry = window.location.pathname;
+    if (entry !== "/" && window.history.state?.thachos === undefined) {
+      window.history.replaceState({ thachos: 0 }, "", "/");
+      window.history.pushState({ thachos: 1 }, "", entry);
+    }
+
     const unsubscribe = store.subscribe((state) => {
       const key = historyKey(state.windows);
       const changed = key !== lastKey;
@@ -35,8 +49,9 @@ export function UrlSync() {
       if (applying) return;
       const path = pathForWindows(state.windows);
       if (path === window.location.pathname) return;
-      if (changed) window.history.pushState(null, "", path);
-      else window.history.replaceState(null, "", path);
+      const depth = historyDepth();
+      if (changed) window.history.pushState({ thachos: depth + 1 }, "", path);
+      else window.history.replaceState({ thachos: depth }, "", path);
     });
 
     const onPopState = () => {
