@@ -28,3 +28,13 @@
   - `turbo test:e2e` chạy luôn e2e có sẵn của Nest, sẽ fail trên CI vì không có `.env`; giới hạn script gốc vào web.
   - Cửa sổ đầu tiên đè lên cột icon; chỉ thấy khi chụp màn hình.
 - **Review:** vòng 1 CHƯA ĐẠT với 3 lỗi thật mà mình bỏ sót: cascade đè cửa sổ sau khi đóng bớt, `localStorage` hỏng làm không mở được cửa sổ, mở lại app đang mở không chuyển focus. Đã sửa kèm test; vòng 2 ĐẠT.
+
+## Task 4: Các app nội dung
+
+- **Đã làm:** About (hồ sơ, nút mở Projects/Contact, kỹ năng đếm theo số nơi dùng), Projects (lưới, lọc chip, chi tiết case study trong cửa sổ), Experience (dòng thời gian, khoảng thời gian), Contact (link, copy email). MDX render ở server rồi truyền vào cửa sổ; `"use cache"` + `cacheLife("max")` để trang vẫn prerender tĩnh.
+- **Vướng:**
+  - Template Next bật sẵn `cacheComponents`; đọc file nội dung làm build fail ("uncached data during prerendering") cho tới khi thêm `"use cache"`.
+  - Tên đọc được của thẻ project bị dính liền ("BETANổi bật…"); test bắt được, sửa bằng `aria-labelledby`.
+  - Placeholder cover ở màn chi tiết chiếm gần hết màn hình khi phóng to; khung avatar bị vỡ. Chỉ thấy khi chụp màn hình.
+  - Reviewer kết luận ĐẠT nhưng 2 test e2e đang fail (selector mơ hồ khi cửa sổ có nội dung thật). Reviewer không chạy e2e, nên bước tự chạy e2e trước khi gọi reviewer là bắt buộc.
+  - Phiên làm việc bị tắt giữa lúc review vòng 2; code còn nguyên trong working tree, chạy lại review. Vòng 2 ĐẠT; sửa thêm 2 lỗi HTML/a11y reviewer chỉ ra (danh sách và `<div>` nằm trong `<button>` của thẻ project).

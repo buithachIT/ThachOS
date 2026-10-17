@@ -166,6 +166,7 @@ export function Window({ id, apps }: { id: string; apps: AppContents }) {
       } ${isTop ? "shadow-[5px_5px_0_var(--ink)]" : "shadow-os"}`}
     >
       <header
+        data-window-titlebar
         onPointerDown={(e) => startGesture(e, "move")}
         onDoubleClick={() => toggleMaximize(id)}
         className={`flex h-9 shrink-0 touch-none items-center gap-2 border-b border-ink px-2 select-none ${
