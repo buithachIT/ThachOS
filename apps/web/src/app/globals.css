@@ -1,26 +1,84 @@
 @import "tailwindcss";
 
+/* Design tokens: see docs/design.md. Light = paper, dark = blueprint. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --paper: #f3efe6;
+  --grid: #d9d2c3;
+  --surface: #fbf9f4;
+  --ink: #1b1a17;
+  --ink-muted: #6b665c;
+  --accent: #c2410c;
+  --accent-ink: #ffffff;
+  --radius: 4px;
+  --shadow: 3px 3px 0 var(--ink);
+  color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not([data-theme="light"]) {
+    --paper: #0f1e33;
+    --grid: #1d3352;
+    --surface: #14273f;
+    --ink: #e4ecf5;
+    --ink-muted: #8ea3bd;
+    --accent: #ff8a4c;
+    --accent-ink: #0f1e33;
+    color-scheme: dark;
   }
 }
 
+:root[data-theme="dark"] {
+  --paper: #0f1e33;
+  --grid: #1d3352;
+  --surface: #14273f;
+  --ink: #e4ecf5;
+  --ink-muted: #8ea3bd;
+  --accent: #ff8a4c;
+  --accent-ink: #0f1e33;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-grid: var(--grid);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --radius-os: var(--radius);
+  --shadow-os: var(--shadow);
+  --font-sans: var(--font-plex-sans);
+  --font-mono: var(--font-plex-mono);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-plex-sans), system-ui, sans-serif;
+}
+
+/* Drafting-paper grid: 24px cells, a heavier line every 5 cells. No image. */
+.bg-blueprint {
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+    linear-gradient(color-mix(in srgb, var(--grid) 45%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--grid) 45%, transparent) 1px, transparent 1px);
+  background-size:
+    120px 120px,
+    120px 120px,
+    24px 24px,
+    24px 24px;
+  background-position: -1px -1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0s !important;
+    animation-duration: 0s !important;
+  }
 }
