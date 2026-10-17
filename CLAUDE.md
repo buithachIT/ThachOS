@@ -15,3 +15,17 @@ X-ray phải là dữ liệu thật: không mock trace; endpoint, socket event v
 - Trước khi báo xong: pnpm lint && pnpm typecheck && pnpm test phải pass.
 - Commit theo Conventional Commits. Mỗi PR một tính năng nhỏ.
 - Không commit .env, không đổi port mặc định.
+
+## Quy trình làm task
+
+- Spec nằm ở docs/specs/. Làm theo thứ tự trong docs/specs/W1/week-1-overview.md.
+- Nguồn nội dung thật: docs/private/ (CV). Không đưa số điện thoại, ngày sinh lên web.
+- Mỗi task:
+  1. Tạo branch feat/<tên-task> từ main mới nhất.
+  2. Đọc spec, viết kế hoạch ngắn vào docs/plans/<tên-task>.md.
+  3. Code + test theo mục "Xong khi" của spec.
+  4. Gọi agent reviewer. CHƯA ĐẠT thì sửa và review lại, tối đa 3 vòng; quá 3 vòng thì dừng và báo.
+  5. ĐẠT thì commit, push, mở PR, ghi vào PR: tóm tắt, cách test, kết quả review.
+  6. Ghi vài dòng vào docs/journal/week-1.md: đã làm gì, chỗ nào vướng.
+- Không push thẳng lên main. Không tự merge PR.
+- Gặp quyết định ngoài spec (thêm thư viện lớn, đổi kiến trúc) thì dừng lại hỏi.
