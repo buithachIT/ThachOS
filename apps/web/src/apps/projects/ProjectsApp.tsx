@@ -63,7 +63,7 @@ export function ProjectsApp({ projects, initialSlug }: Props) {
                 type="button"
                 aria-pressed={on}
                 onClick={() => toggle(tech)}
-                className={`rounded-sm border px-2 py-0.5 font-mono text-[11px] focus-visible:outline-2 focus-visible:outline-accent ${
+                className={`rounded-sm border px-2 py-0.5 font-mono text-[11px] max-md:min-h-11 max-md:px-3 focus-visible:outline-2 focus-visible:outline-accent ${
                   on ? "border-accent bg-accent text-accent-ink" : "border-ink/30 hover:border-ink"
                 }`}
               >
@@ -159,7 +159,7 @@ function ProjectDetail({
         type="button"
         onClick={onBack}
         autoFocus={focusBack}
-        className="font-mono text-xs hover:text-accent focus-visible:outline-2 focus-visible:outline-accent"
+        className="font-mono text-xs hover:text-accent max-md:min-h-11 focus-visible:outline-2 focus-visible:outline-accent"
       >
         ← Tất cả project
       </button>
@@ -174,7 +174,7 @@ function ProjectDetail({
       </header>
       <StackList stack={data.stack} />
       {(data.links.demo || data.links.repo) && (
-        <p className="flex gap-4 font-mono text-sm">
+        <p className="flex gap-4 font-mono text-sm max-md:[&>a]:inline-flex max-md:[&>a]:min-h-11 max-md:[&>a]:items-center">
           {data.links.demo && (
             <a href={data.links.demo} target="_blank" rel="noreferrer" className={linkClass}>
               Demo ↗

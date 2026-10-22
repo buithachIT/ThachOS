@@ -40,13 +40,16 @@ export function ContactApp({ links }: { links: Profile["links"] }) {
       <div className="space-y-2">
         <p className="font-mono text-xs tracking-wider text-ink-muted uppercase">Email</p>
         <div className="flex flex-wrap items-center gap-2">
-          <a href={`mailto:${links.email}`} className={`font-mono ${linkClass}`}>
+          <a
+            href={`mailto:${links.email}`}
+            className={`font-mono max-md:inline-flex max-md:min-h-11 max-md:items-center ${linkClass}`}
+          >
             {links.email}
           </a>
           <button
             type="button"
             onClick={copy}
-            className="rounded-os border border-ink px-2.5 py-1 font-mono text-xs hover:bg-ink/10 focus-visible:outline-2 focus-visible:outline-accent"
+            className="rounded-os border border-ink px-2.5 py-1 font-mono text-xs max-md:min-h-11 hover:bg-ink/10 focus-visible:outline-2 focus-visible:outline-accent"
           >
             Copy email
           </button>
@@ -68,7 +71,7 @@ export function ContactApp({ links }: { links: Profile["links"] }) {
                 href={row.href}
                 target="_blank"
                 rel="noreferrer"
-                className={`font-mono text-sm ${linkClass}`}
+                className={`font-mono text-sm max-md:inline-flex max-md:min-h-11 max-md:items-center ${linkClass}`}
               >
                 {row.text}
               </a>
