@@ -138,6 +138,24 @@ describe("move and resize limits", () => {
   });
 });
 
+describe("initial window (deep links)", () => {
+  it("is part of the initial state, which the server render reads", () => {
+    const store = createWindowsStore(memoryStorage(), VIEWPORT, {
+      appId: "projects",
+      subpath: "aurore",
+    });
+    expect(store.getInitialState().windows).toEqual([
+      expect.objectContaining({ appId: "projects", subpath: "aurore", x: CASCADE.x, y: CASCADE.y }),
+    ]);
+  });
+
+  it("ignores the saved layout so server and first client render match", () => {
+    const storage = memoryStorage({ about: { x: 500, y: 300, w: 400, h: 300 } });
+    const store = createWindowsStore(storage, VIEWPORT, { appId: "about" });
+    expect(store.getState().windows[0]).toMatchObject({ x: CASCADE.x, y: CASCADE.y });
+  });
+});
+
 describe("saved layout", () => {
   it.each([
     ["null", "null"],

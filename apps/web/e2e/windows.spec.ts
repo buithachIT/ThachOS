@@ -1,6 +1,10 @@
 import { expect, type Page, test } from "@playwright/test";
 
-const titleBar = (page: Page, name: string) => page.getByRole("dialog", { name }).locator("header");
+/** Desktop icon by exact name (window content may contain buttons like "Xem Projects"). */
+const icon = (page: Page, name: string) => page.getByRole("button", { name, exact: true }).first();
+
+const titleBar = (page: Page, name: string) =>
+  page.getByRole("dialog", { name }).locator("[data-window-titlebar]");
 
 async function drag(page: Page, name: string, dx: number, dy: number, steps = 10) {
   const box = (await titleBar(page, name).boundingBox())!;
@@ -17,7 +21,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("About reopens where it was dragged to", async ({ page }) => {
-  await page.getByRole("button", { name: "About" }).dblclick();
+  await icon(page, "About").dblclick();
   const about = page.getByRole("dialog", { name: "About" });
   await expect(about).toBeVisible();
   const before = (await about.boundingBox())!;
@@ -30,27 +34,28 @@ test("About reopens where it was dragged to", async ({ page }) => {
   await about.getByRole("button", { name: "Đóng" }).click();
   await expect(about).toBeHidden();
 
-  await page.getByRole("button", { name: "About" }).dblclick();
+  await icon(page, "About").dblclick();
   const reopened = (await page.getByRole("dialog", { name: "About" }).boundingBox())!;
   expect(reopened.x).toBeCloseTo(moved.x, 0);
   expect(reopened.y).toBeCloseTo(moved.y, 0);
 });
 
-test("layout survives a reload, the open-window list does not", async ({ page }) => {
-  await page.getByRole("button", { name: "Contact" }).dblclick();
+test("layout survives a new visit, the open-window list does not", async ({ page }) => {
+  await icon(page, "Contact").dblclick();
   await drag(page, "Contact", 150, 80);
   const moved = (await page.getByRole("dialog", { name: "Contact" }).boundingBox())!;
 
-  await page.reload();
+  // The URL is now /contact (deep link); a fresh visit to / must start with a clean desktop.
+  await page.goto("/");
   await expect(page.getByRole("dialog")).toHaveCount(0);
-  await page.getByRole("button", { name: "Contact" }).dblclick();
+  await icon(page, "Contact").dblclick();
   const reopened = (await page.getByRole("dialog", { name: "Contact" }).boundingBox())!;
   expect(reopened.x).toBeCloseTo(moved.x, 0);
   expect(reopened.y).toBeCloseTo(moved.y, 0);
 });
 
 test("resize from the bottom-right corner respects the minimum size", async ({ page }) => {
-  await page.getByRole("button", { name: "Experience" }).dblclick();
+  await icon(page, "Experience").dblclick();
   const win = page.getByRole("dialog", { name: "Experience" });
   const box = (await win.boundingBox())!;
   await page.mouse.move(box.x + box.width - 3, box.y + box.height - 3);
@@ -64,7 +69,7 @@ test("resize from the bottom-right corner respects the minimum size", async ({ p
 
 test("four windows drag smoothly", async ({ page }) => {
   for (const name of ["About", "Projects", "Experience", "Contact"]) {
-    await page.getByRole("button", { name }).dblclick();
+    await page.locator(`[data-app-id="${name.toLowerCase()}"]`).dblclick();
   }
   await expect(page.getByRole("dialog")).toHaveCount(4);
 

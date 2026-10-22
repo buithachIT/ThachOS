@@ -27,5 +27,8 @@
     "typescript": "catalog:"
   },
   "private": true,
-  "packageManager": "pnpm@11.28.6"
+  "packageManager": "pnpm@11.28.6",
+  "engines": {
+    "node": ">=22"
+  }
 }

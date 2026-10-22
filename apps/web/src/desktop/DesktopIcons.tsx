@@ -2,13 +2,16 @@
 
 import { type AppId, APPS } from "@portfolio/shared";
 import { type KeyboardEvent, useState } from "react";
+import { isPhone } from "@/lib/viewport";
 import { APP_ICONS } from "./icons";
-import { openApp } from "./open-app";
+import { useOpenApp } from "./open-app";
 
 type Props = { onOpen?: (appId: AppId) => void };
 
 /** Desktop icons from the app registry. Click selects; double-click or Enter opens. */
-export function DesktopIcons({ onOpen = openApp }: Props) {
+export function DesktopIcons({ onOpen: onOpenProp }: Props) {
+  const openApp = useOpenApp();
+  const onOpen = onOpenProp ?? openApp;
   const [selected, setSelected] = useState<AppId | null>(null);
 
   const onKeyDown = (event: KeyboardEvent, appId: AppId) => {
@@ -30,7 +33,7 @@ export function DesktopIcons({ onOpen = openApp }: Props) {
     >
       <ul
         aria-label="Ứng dụng"
-        className="grid h-full w-fit auto-cols-max grid-flow-col grid-rows-[repeat(auto-fill,6.5rem)] gap-2"
+        className="grid h-full w-fit auto-cols-max grid-flow-col grid-rows-[repeat(auto-fill,6.5rem)] gap-2 max-md:h-auto max-md:w-full max-md:grid-flow-row max-md:grid-cols-4 max-md:grid-rows-none max-md:gap-y-4"
       >
         {APPS.map((app) => {
           const Icon = APP_ICONS[app.icon];
@@ -40,10 +43,11 @@ export function DesktopIcons({ onOpen = openApp }: Props) {
               <button
                 type="button"
                 data-app-id={app.id}
-                onClick={() => setSelected(app.id)}
-                onDoubleClick={() => onOpen(app.id)}
+                // Desktop: click selects, double-click opens. Phone: a tap opens, like a home screen.
+                onClick={() => (isPhone() ? onOpen(app.id) : setSelected(app.id))}
+                onDoubleClick={() => !isPhone() && onOpen(app.id)}
                 onKeyDown={(event) => onKeyDown(event, app.id)}
-                className="group flex w-24 flex-col items-center gap-1.5 rounded-os p-2 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                className="group flex w-24 max-md:w-full flex-col items-center gap-1.5 rounded-os p-2 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               >
                 <span
                   className={`grid size-14 place-items-center rounded-os border bg-surface transition-[box-shadow,translate] duration-100 ${

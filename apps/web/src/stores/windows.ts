@@ -1,6 +1,5 @@
 import { type AppId, appIdSchema, getApp } from "@portfolio/shared";
 import { z } from "zod";
-import { useStore } from "zustand";
 import { createStore } from "zustand/vanilla";
 import {
   CASCADE,
@@ -23,6 +22,8 @@ export type WindowState = {
   z: number;
   minimized: boolean;
   maximized: boolean;
+  /** Where the app is inside its window, e.g. a project slug. Mirrored in the URL. */
+  subpath?: string;
 };
 
 export type WindowsState = {
@@ -40,7 +41,11 @@ export type WindowsState = {
   /** Commit a drag or resize in one update (one storage write, later one realtime event). */
   setRect: (id: string, rect: Rect) => void;
   setViewport: (viewport: Size) => void;
+  setSubpath: (id: string, subpath: string | undefined) => void;
 };
+
+/** The window a page starts with, e.g. `/projects/aurore` → projects + "aurore". */
+export type InitialWindow = { appId: AppId; subpath?: string };
 
 /** Remembered position/size per app. Only geometry: the open-window list is never restored. */
 export type LayoutStorage = {
@@ -86,15 +91,16 @@ export const browserLayoutStorage: LayoutStorage = {
   },
 };
 
-const DEFAULT_VIEWPORT: Size = { w: 1280, h: 760 };
+export const DEFAULT_VIEWPORT: Size = { w: 1280, h: 760 };
 
 export function createWindowsStore(
   storage: LayoutStorage = browserLayoutStorage,
   viewport: Size = DEFAULT_VIEWPORT,
+  initial?: InitialWindow,
 ) {
   let counter = 0;
 
-  return createStore<WindowsState>()((set, get) => {
+  const store = createStore<WindowsState>()((set, get) => {
     const topZ = () => Math.max(0, ...get().windows.map((w) => w.z));
 
     const update = (id: string, patch: (w: WindowState) => Partial<WindowState>) =>
@@ -125,7 +131,9 @@ export function createWindowsStore(
       });
 
     return {
-      windows: [],
+      // The initial window must be part of the *initial* state: the server render reads
+      // getInitialState(), so opening it after creation would leave the server HTML empty.
+      windows: initial ? [initialWindow(initial, viewport, ++counter)] : [],
       viewport,
 
       open(appId) {
@@ -183,6 +191,8 @@ export function createWindowsStore(
 
       closeAll: () => set({ windows: [] }),
 
+      setSubpath: (id, subpath) => update(id, () => ({ subpath })),
+
       setViewport(vp) {
         set((s) => ({
           viewport: vp,
@@ -195,11 +205,22 @@ export function createWindowsStore(
       },
     };
   });
+
+  return store;
 }
 
-/** The app-wide store. Tests create their own with createWindowsStore(). */
-export const windowsStore = createWindowsStore();
+export type WindowsStore = ReturnType<typeof createWindowsStore>;
 
-export function useWindows<T>(selector: (state: WindowsState) => T): T {
-  return useStore(windowsStore, selector);
+/** Deep-link window: first cascade slot, default size, no saved layout (same on server and client). */
+function initialWindow(initial: InitialWindow, viewport: Size, n: number): WindowState {
+  const rect = clampRect({ ...cascadePosition(0), ...getApp(initial.appId).defaultSize }, viewport);
+  return {
+    id: `${initial.appId}-${n}`,
+    appId: initial.appId,
+    ...rect,
+    z: 1,
+    minimized: false,
+    maximized: false,
+    subpath: initial.subpath,
+  };
 }

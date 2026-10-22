@@ -4,10 +4,10 @@ import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Desktop } from "./Desktop";
-import { openApp } from "./open-app";
 import { THEME_STORAGE_KEY } from "./theme";
 
-vi.mock("./open-app", () => ({ openApp: vi.fn() }));
+const openApp = vi.fn();
+vi.mock("./open-app", () => ({ useOpenApp: () => openApp }));
 
 function mockSystemTheme(dark: boolean) {
   window.matchMedia = vi.fn().mockReturnValue({
