@@ -1,7 +1,9 @@
 import { DesktopIcons } from "./DesktopIcons";
+import { type AppContents, WindowLayer } from "@/windows/WindowLayer";
 import { SystemBar } from "./SystemBar";
 
-export function Desktop() {
+/** `apps`: server-rendered content for each app window, keyed by app id. */
+export function Desktop({ apps = {} }: { apps?: AppContents }) {
   return (
     <div className="flex h-dvh flex-col">
       <SystemBar />
@@ -9,6 +11,7 @@ export function Desktop() {
         <h1 className="sr-only">ThạchOS – portfolio của Bùi Công Thạch</h1>
         <DesktopIcons />
         <TitleBlock />
+        <WindowLayer apps={apps} />
       </main>
     </div>
   );
