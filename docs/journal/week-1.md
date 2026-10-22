@@ -56,3 +56,9 @@
   - Nhiều lần chạy e2e "treo": `pnpm exec` của pnpm 11 kiểm tra dependency qua mạng trước khi chạy, mạng chậm nên web server của Playwright không kịp lên. Gọi thẳng `node_modules/.bin/next`. Thêm nữa, macOS không có lệnh `timeout` nên vài lệnh kiểm tra lỗi ngay mà không in gì; suýt đọc nhầm thành "không có lỗi".
 - **Review:** ĐẠT ở vòng 1. Áp dụng thêm: `isTop` bỏ qua cửa sổ đã thu nhỏ (tránh màn hình trống khi thu hẹp trình duyệt), chặn double-tap mở app hai lần.
   - Lệnh sửa `playwright.config.ts` không áp dụng vì Prettier đã đổi định dạng file, nên test mobile chạy nhầm trong project desktop.
+
+## Task 7: Deploy
+
+- **Đã làm (phần trong repo):** `outputFileTracingRoot` + `outputFileTracingIncludes` để serverless function có `content/` (trang render lúc chạy cho slug lạ vẫn đọc được nội dung; đã kiểm tra đủ 7 file `.mdx` trong file trace); `apps/web/vercel.json` build bằng Turborepo từ gốc repo; `README.md` ở gốc; hướng dẫn kết nối Vercel trong `docs/deploy.md`.
+- **Chưa làm được:** kết nối Vercel cần chủ repo đăng nhập, nên production URL, link preview trên PR và Lighthouse trên URL thật còn chờ.
+- **Review:** vòng 1 CHƯA ĐẠT: lệnh chạy riêng web trong README hỏng trên bản clone mới (`packages/shared` chưa build). Sửa sang `pnpm turbo dev --filter=@portfolio/web`; vòng 2 ĐẠT.
