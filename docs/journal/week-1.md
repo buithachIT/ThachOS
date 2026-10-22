@@ -38,3 +38,12 @@
   - Placeholder cover ở màn chi tiết chiếm gần hết màn hình khi phóng to; khung avatar bị vỡ. Chỉ thấy khi chụp màn hình.
   - Reviewer kết luận ĐẠT nhưng 2 test e2e đang fail (selector mơ hồ khi cửa sổ có nội dung thật). Reviewer không chạy e2e, nên bước tự chạy e2e trước khi gọi reviewer là bắt buộc.
   - Phiên làm việc bị tắt giữa lúc review vòng 2; code còn nguyên trong working tree, chạy lại review. Vòng 2 ĐẠT; sửa thêm 2 lỗi HTML/a11y reviewer chỉ ra (danh sách và `<div>` nằm trong `<button>` của thẻ project).
+
+## Task 5: Routing, deep link và SEO
+
+- **Đã làm:** route `[[...path]]` cho `/`, `/<app>`, `/projects/<slug>` (prerender hết); store cửa sổ chuyển sang Provider theo từng trang; `UrlSync` giữ URL và cửa sổ khớp nhau (Back/Forward); metadata + ảnh OG (`next/og`) cho từng route; sitemap, robots; trang 404 kiểu ThạchOS, `proxy.ts` trả 404 thật cho đường dẫn sai cấu trúc; `<noscript>` và thẻ project là link thật.
+- **Vướng:**
+  - `cacheComponents` không cho dùng `dynamicParams`, và bắt mọi lần đọc content phải `"use cache"`.
+  - Trang stream nên `notFound()` chỉ trả 200 + `noindex`; dùng proxy cho các đường dẫn kiểm tra được mà không cần content.
+  - **Lỗi đáng nhớ nhất:** server HTML không hề có cửa sổ, vì Zustand render phía server bằng `getInitialState()` (state lúc tạo store, trước khi mở cửa sổ ban đầu). Test e2e "nội dung có trong HTML" vẫn pass vì chữ nằm trong payload RSC. Chỉ phát hiện khi chụp màn hình bản tắt JS. Sửa store và đổi test sang trình duyệt tắt JS.
+- **Review:** vòng 1 CHƯA ĐẠT: `NEXT_PUBLIC_SITE_URL` chưa có trong `.env.example` và chưa validate bằng Zod (quên đặt thì SEO trỏ về localhost mà không ai biết). Đã sửa kèm test; vòng 2 ĐẠT.

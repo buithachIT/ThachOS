@@ -40,12 +40,13 @@ test("About reopens where it was dragged to", async ({ page }) => {
   expect(reopened.y).toBeCloseTo(moved.y, 0);
 });
 
-test("layout survives a reload, the open-window list does not", async ({ page }) => {
+test("layout survives a new visit, the open-window list does not", async ({ page }) => {
   await icon(page, "Contact").dblclick();
   await drag(page, "Contact", 150, 80);
   const moved = (await page.getByRole("dialog", { name: "Contact" }).boundingBox())!;
 
-  await page.reload();
+  // The URL is now /contact (deep link); a fresh visit to / must start with a clean desktop.
+  await page.goto("/");
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await icon(page, "Contact").dblclick();
   const reopened = (await page.getByRole("dialog", { name: "Contact" }).boundingBox())!;

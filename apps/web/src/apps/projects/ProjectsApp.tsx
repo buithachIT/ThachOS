@@ -3,6 +3,7 @@
 import type { Project } from "@portfolio/shared";
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useWindowSubpath } from "@/stores/WindowsProvider";
 import type { Rendered } from "../types";
 import { DrawingPlaceholder, linkClass, StackChips, StackList } from "../ui";
 
@@ -13,7 +14,7 @@ const byFeatured = (a: Rendered<Project>, b: Rendered<Project>) =>
   Number(b.data.featured) - Number(a.data.featured);
 
 export function ProjectsApp({ projects, initialSlug }: Props) {
-  const [slug, setSlug] = useState(initialSlug);
+  const [slug, setSlug] = useWindowSubpath(initialSlug);
   const [filters, setFilters] = useState<string[]>([]);
 
   const sorted = useMemo(() => [...projects].sort(byFeatured), [projects]);
@@ -81,10 +82,15 @@ export function ProjectsApp({ projects, initialSlug }: Props) {
         <ul className="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">
           {visible.map((p) => (
             <li key={p.slug}>
-              <button
-                type="button"
+              {/* A real link: crawlers and no-JS readers can follow it; with JS it opens in-window. */}
+              <a
+                href={`/projects/${p.slug}`}
                 id={cardId(p.slug)}
-                onClick={() => open(p.slug)}
+                onClick={(e) => {
+                  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+                  e.preventDefault();
+                  open(p.slug);
+                }}
                 aria-labelledby={`project-${p.slug}-title`}
                 aria-describedby={`project-${p.slug}-summary project-${p.slug}-stack`}
                 className="group flex h-full w-full flex-col overflow-hidden rounded-os border border-ink bg-surface text-left shadow-os transition-[translate] duration-100 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
@@ -108,7 +114,7 @@ export function ProjectsApp({ projects, initialSlug }: Props) {
                     <StackChips stack={p.data.stack} max={5} id={`project-${p.slug}-stack`} />
                   </span>
                 </span>
-              </button>
+              </a>
             </li>
           ))}
         </ul>

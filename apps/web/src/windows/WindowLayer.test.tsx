@@ -3,7 +3,6 @@ import { cleanup, render, screen, waitFor, within } from "@testing-library/react
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { Desktop } from "@/desktop/Desktop";
-import { windowsStore } from "@/stores/windows";
 
 function Boom(): never {
   throw new Error("boom");
@@ -16,7 +15,6 @@ beforeEach(() => {
     removeEventListener() {},
   })) as unknown as typeof window.matchMedia;
   localStorage.clear();
-  windowsStore.getState().closeAll();
 });
 
 afterEach(cleanup);
